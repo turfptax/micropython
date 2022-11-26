@@ -1,12 +1,12 @@
 print('starting PR2040 pico W')
 
-import urefl
-import frint
+import urepl
 
 # Setup as wireless access point
 wap = urefl.wap()
+
 # print the network details
-urefl.printdetails()
+urepl.printdetails()
 
 # setup to receive a packet and also get the senders address
 reply = urepl.receive()
