@@ -2,7 +2,6 @@
 # takes care of connecting to wifi or creating your own
 # written for the Rapsberry Pi Pico W
 # requires the frint dependancy to allow for print over udp
-
 import gc
 import socket
 import network
@@ -150,6 +149,20 @@ def set_timeout(t):
     timeout = t
     print(f'You set the timeout to: {timeout}')
     printdetails()
+    
+def search():
+    #not finished don't use
+    global connection_type
+    global server_ip
+    global port
+    s = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+    for i in range(253):
+        ipvfour = server_ip.split('.')
+        address = ipvfour[0]+ '.' + ipvfour[1] +'.' + ipvfour[2] +'.' + str(i)
+        s.sendto(b'Im ready to receive a UDP packet!',(address,3145))
+    return 'Sent packet to all devices on the 255.255.255.0 Subnet'
+
+        
 
 def start():
     gc.collect()

@@ -3,7 +3,7 @@ print('starting PR2040 pico W')
 import urepl
 
 # Setup as wireless access point
-wap = urefl.wap()
+wap = urepl.wap()
 
 # print the network details
 urepl.printdetails()
