@@ -1,28 +1,34 @@
 # Simple urepl like module
 # takes care of connecting to wifi or creating your own
 # written for the Rapsberry Pi Pico W
+# requires the frint dependancy to allow for print over udp
 
-
+import gc
 import socket
 import network
 import time
 
+# Network Setup
 global connection_type
 global ssid
 global password
 
+# Server Client Setup
 global server_ip
 global client_ip
 global port
 global timeout
 
-try:
-    import frint
-    frint.frint('hi from frint inside of urepl')
-except:
-    print('failed to use frint in urepl')
+# Frint Setup
+global ram
+global cur
+global buff
 
 
+# Frint Arrays/variables No need to change
+ram = []
+cur = 0
+buff = ['blank']
 # Default Network to connect using wificonnect()
 # Change these settings or use the built in functions
 connection_type = 'Not Connected'
@@ -56,6 +62,7 @@ def wificonnect(ssid=ssid,password=password):
 
 def wap(pico_ssid = "PicoW",pico_pass = "picopico"):
     global server_ip
+    global connection_type
     print('Use: like urepl.wap(SSID,Password)')
     print('otherwise uses default Picow,picopico')
     print('returns network wap object')
@@ -72,6 +79,7 @@ def wap(pico_ssid = "PicoW",pico_pass = "picopico"):
     print('Local Ip Address, Subnet Mask, Default Gateway, Listening on...')
     server_ip = wap.ifconfig()[0]
     print(wap.ifconfig())
+    connection_type = "Wireless Access Point"
     return wap
 
 def send(data):
@@ -84,6 +92,7 @@ def send(data):
     print(s)
     s.sendto(d,destination)
     s.close
+    gc.collect()
 
 # Akin to input() on normal python
 # Will open a UDP socket and wait for a packet
@@ -106,6 +115,7 @@ def receive():
         print('timeout exceeded or recvfrom err')
         r.close()
     r.close()
+    gc.collect()
     return data
 
 def printdetails():
@@ -142,13 +152,53 @@ def set_timeout(t):
     printdetails()
 
 def start():
+    gc.collect()
     end_session = False
     while not end_session:
         reply = receive()
-        frint.frint(exec(reply))
-        send(bytes(str(frint.getram()),'utf-8'))
+        try:
+            frint(exec(reply))
+        except:
+            frint(str(reply))
+        send(bytes(str(frint.getbuff()),'utf-8'))
         if reply == b'stop':
             end_session = True
+            
+def frint(data):
+    global ram
+    global cur
+    if type(data) is type(None):
+        if cur != 0:
+            return printram(0-cur)
+    elif type(data) == str:
+        ram.append(data)
+        cur += 1
+        return ram[-1]
+    elif type(data) == list:
+        for i in data:
+            frint(i)
+        return printram(0-cur)
+    elif type(data) == int or type(data) == bool or type(data) == float:
+        ram.append(str(data))
+        cur += 1
+        return ram[-1]
+
+#runs everytime then end of a list or command happens
+def printram(ammount):
+    global ram
+    global buff
+    buff.append(ram)
+    return(buff[-1])
+
+# Only runs by outside call
+def getram():
+    global ram
+    return(ram[-1])
+
+def getbuff():
+    global buff
+    return(buff[-1])
+    
     
 
 print('--urepl--')
