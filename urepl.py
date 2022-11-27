@@ -2,6 +2,9 @@
 # takes care of connecting to wifi or creating your own
 # written for the Rapsberry Pi Pico W
 # requires the frint dependancy to allow for print over udp
+# Version 0.1
+# 26-11-2022
+
 import gc
 import socket
 import network
@@ -97,16 +100,17 @@ def send(data):
 # Will open a UDP socket and wait for a packet
 # Will keep code from running 
 def receive():
+    # TODO take comment out print and turn to help
     data = 'print("oopsydaisy")'
     global client_ip
     global port
     global server_ip
     global timeout
-    print('Use like urepl.receive(server_ip,port)')
+    #print('Use like urepl.receive(server_ip,port)')
     r = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
     r.bind((server_ip,port))
     r.settimeout(15)
-    print(f'waiting to receive on {server_ip}:{port}')
+    #print(f'waiting to receive on {server_ip}:{port}')
     try:
         data,addr = r.recvfrom(1024)
         client_ip = addr[0]
@@ -162,18 +166,17 @@ def search():
         s.sendto(b'Im ready to receive a UDP packet!',(address,3145))
     return 'Sent packet to all devices on the 255.255.255.0 Subnet'
 
-        
-
 def start():
     gc.collect()
     end_session = False
+    print('starting urepl session')
     while not end_session:
         reply = receive()
         try:
             frint(exec(reply))
         except:
             frint(str(reply))
-        send(bytes(str(frint.getbuff()),'utf-8'))
+        send(bytes(str(getbuff()),'utf-8'))
         if reply == b'stop':
             end_session = True
             
