@@ -36,7 +36,7 @@ buff = ['blank']
 connection_type = 'Not Connected'
 ssid = 'OpenMuscle'
 password = '3141592653'
-port = 3145
+port = 1234
 server_ip = '0.0.0.0'
 client_ip = '192.168.1.32'
 timeout = 15
@@ -172,11 +172,12 @@ def start():
     print('starting urepl session')
     while not end_session:
         reply = receive()
+        print(f'print: {reply}')
         try:
             frint(exec(reply))
         except:
             frint(str(reply))
-        send(bytes(str(getbuff()),'utf-8'))
+        send(bytes(str(getram()),'utf-8'))
         if reply == b'stop':
             end_session = True
             
