@@ -186,7 +186,7 @@ def frint(data):
     global cur
     if type(data) is type(None):
         if cur != 0:
-            return printram(0-cur)
+            return printram()
     elif type(data) == str:
         ram.append(data)
         cur += 1
@@ -194,14 +194,14 @@ def frint(data):
     elif type(data) == list:
         for i in data:
             frint(i)
-        return printram(0-cur)
+        return printram()
     elif type(data) == int or type(data) == bool or type(data) == float:
         ram.append(str(data))
         cur += 1
         return ram[-1]
 
 #runs everytime then end of a list or command happens
-def printram(ammount):
+def printram():
     global ram
     global buff
     buff.append(ram)
@@ -210,12 +210,13 @@ def printram(ammount):
 # Only runs by outside call
 def getram():
     global ram
+    global cur
+    cur = 0
     return(ram[-1])
 
 def getbuff():
     global buff
     return(buff[-1])
-    
-    
+
 
 print('--urepl--')
